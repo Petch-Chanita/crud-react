@@ -1,0 +1,133 @@
+import React, { useState, useEffect } from "react";
+import { Button, Grid, TextField, Typography } from "@mui/material";
+import Container from "@mui/material/Container";
+import CssBaseline from "@mui/material/CssBaseline";
+import { useParams } from "react-router-dom";
+
+const UserUpdate = () => {
+  const { id } = useParams();
+  const [fname, setFname] = useState("");
+  const [lname, setLname] = useState("");
+  const [username, setUsername] = useState("");
+  const [image, setImage] = useState("");
+
+  const apiUrl = process.env.REACT_APP_API_URL;
+
+  useEffect(() => {
+    console.log(id);
+    const requestOptions: object = {
+      method: "GET",
+      redirect: "follow",
+    };
+    fetch(`${apiUrl}/users/${id}`, requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        console.log(result);
+        setFname(result?.first_name);
+        setLname(result?.last_name);
+        setUsername(result?.username);
+        setImage(result?.image);
+      })
+      .catch((error) => console.error(error));
+  }, [id]);
+
+  const handleUpdate = (event) => {
+    event.preventDefault();
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    const raw = JSON.stringify({
+      first_name: fname,
+      last_name: lname,
+      username: username,
+      image: image,
+    });
+    const requestOptions: object = {
+      method: "PUT",
+      headers: myHeaders,
+      body: raw,
+      redirect: "follow",
+    };
+    fetch(`${apiUrl}/users/${id}`, requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        console.log(result);
+        if(result["status"] === "ok"){
+          alert(result["message"]);
+          window.location.href = "/";
+        }
+         
+      })
+      .catch((error) => {
+        alert(error);
+        console.log(requestOptions);
+        console.error(error);
+      });
+  };
+
+  return (
+    <>
+      <CssBaseline />
+      <Container maxWidth="sm" sx={{ p: 2 }}>
+        <Typography variant="h6" gutterBottom component="div">
+          Update User
+        </Typography>
+        <form onSubmit={handleUpdate}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                id="first_name"
+                label="First Name"
+                variant="outlined"
+                fullWidth
+                required
+                onChange={(e: any) => setFname(e.target.value)}
+                value={fname}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                id="last_name"
+                label="Last Name"
+                variant="outlined"
+                fullWidth
+                required
+                onChange={(e: any) => setLname(e.target.value)}
+                value={lname}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                id="username"
+                label="Username"
+                variant="outlined"
+                fullWidth
+                required
+                onChange={(e: any) => setUsername(e.target.value)}
+                value={username}
+              />
+            </Grid>
+            
+            <Grid item xs={12}>
+              <TextField
+                id="image"
+                label="Image"
+                variant="outlined"
+                fullWidth
+                required
+                onChange={(e: any) => setImage(e.target.value)}
+                value={image}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Button type="submit" variant="contained" fullWidth>
+                Update
+              </Button>
+            </Grid>
+          </Grid>
+        </form>
+      </Container>
+    </>
+  );
+};
+
+export default UserUpdate;
