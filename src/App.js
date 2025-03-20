@@ -6,8 +6,8 @@ import UserUpdate from "./UserUpdate.tsx";
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Navbar />}>
+    <Routes >
+      <Route path="/crud-react/" element={<Navbar />}>
         <Route index element={<Users />} />
         <Route path="create" element={<UserCreate />} />
         <Route path="update/:id" element={<UserUpdate />} />

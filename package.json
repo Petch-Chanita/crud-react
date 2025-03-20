@@ -1,6 +1,6 @@
 {
-  "name": "crud-react",
-  "homepage": "https://Petch-Chanita.github.io/user-data",
+  "name": "crud-react-project",
+  "homepage": "https://Petch-Chanita.github.io/crud-react",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
