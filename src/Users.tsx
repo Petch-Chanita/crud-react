@@ -146,7 +146,7 @@ const Users = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {items?.map((row) => (
+                {items?.map((row:any) => (
                   <TableRow
                     key={row.username}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -182,7 +182,6 @@ const Users = () => {
           </TableContainer>
 
           <Modal
-            children={[]}
             open={open}
             onClose={handleClose}
             aria-labelledby="modal-modal-title"
