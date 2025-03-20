@@ -21,7 +21,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import Modal from "@mui/material/Modal";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
-import { CircularProgress, TablePagination } from "@mui/material";
+import { CircularProgress, IconButton, TablePagination } from "@mui/material";
 
 const style = {
   position: "absolute",
@@ -134,7 +134,7 @@ const Users = () => {
     <>
       <CssBaseline />
       <Container maxWidth="lg" sx={{ p: 2 }}>
-        <Paper sx={{ p: 2 }}>
+        {/* <Paper sx={{ p: 2 }}> */}
           <Box display={"flex"} sx={{ paddingTop: 2, paddingBottom: 2 }}>
             <Box sx={{ flexGrow: 1 }}>
               <Typography variant="h6" gutterBottom>
@@ -150,8 +150,8 @@ const Users = () => {
             </Box>
           </Box>
 
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <TableContainer sx={{ maxHeight: 440 }} component={Paper}>
+            <Table sx={{ minWidth: 650 }} stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
                   <TableCell>ID</TableCell>
@@ -171,6 +171,10 @@ const Users = () => {
                         sx={{
                           "&:last-child td, &:last-child th": { border: 0 },
                         }}
+                        hover 
+                        role="checkbox" 
+                        tabIndex={-1}
+                        
                       >
                         <TableCell component="th" scope="row">
                           {row.id}
@@ -188,33 +192,35 @@ const Users = () => {
                             variant="outlined"
                             aria-label="Basic button group"
                           >
-                            <Button onClick={() => handleUpdate(row.id)}>
+                            <IconButton  onClick={() => handleUpdate(row.id)} color="success">
                               <ModeEditIcon />
-                            </Button>
-                            <Button onClick={() => handleOpen(row.id)}>
+                            </IconButton>
+                            <IconButton onClick={() => handleOpen(row.id)} color="error">
                               <DeleteIcon />
-                            </Button>
+                            </IconButton>
                           </ButtonGroup>
                         </TableCell>
                       </TableRow>
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={6} align="center">
+                      <TableCell colSpan={6}  sx={{ textAlign: 'center' }}>
                         No Data
                       </TableCell>
                     </TableRow>
                   )
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={6} align="center">
+                    <TableCell colSpan={6}  sx={{ textAlign: 'center' }}>
                       <CircularProgress />
                     </TableCell>
                   </TableRow>
                 )}
               </TableBody>
             </Table>
-            <TablePagination
+           
+          </TableContainer>
+          <TablePagination
               rowsPerPageOptions={[5, 10, 15]}
               component="div"
               count={items.length}
@@ -223,7 +229,6 @@ const Users = () => {
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
             />
-          </TableContainer>
 
           <Modal
             open={open}
@@ -253,7 +258,7 @@ const Users = () => {
               </Typography>
             </Box>
           </Modal>
-        </Paper>
+        {/* </Paper> */}
       </Container>
     </>
   );
