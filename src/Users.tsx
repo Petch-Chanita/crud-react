@@ -19,8 +19,9 @@ import ButtonGroup from "@mui/material/ButtonGroup";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Modal from "@mui/material/Modal";
-import Fab from '@mui/material/Fab';
-import AddIcon from '@mui/icons-material/Add';
+import Fab from "@mui/material/Fab";
+import AddIcon from "@mui/icons-material/Add";
+import { CircularProgress, TablePagination } from "@mui/material";
 
 const style = {
   position: "absolute",
@@ -38,6 +39,9 @@ const Users = () => {
   const [items, setItems] = useState([]);
   const [id, setID] = useState("");
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -56,13 +60,13 @@ const Users = () => {
       .then((res) => res.json())
       .then(
         (result) => {
-          // setIsLoaded(true);
+          setIsLoading(false);
           setItems(result["result"]);
         },
         (error) => {
           console.log(error);
 
-          // setIsLoaded(true);
+          setIsLoading(false);
           // setError(error);
         }
       );
@@ -74,35 +78,32 @@ const Users = () => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
-
     const requestOptions: any = {
       method: "DELETE",
       headers: myHeaders,
     };
 
     fetch(`${apiUrl}/users/${id}`, requestOptions)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Failed to delete user");
-      }
-      return response.text(); // ใช้ text() แทนเผื่อ response ว่าง
-    })
-    .then((text) => {
-      if (text) {
-        const result = JSON.parse(text);
-        console.log(result);
-      }
-      alert("Delete successful!");
-      getUser();
-      handleClose();
-    })
-    .catch((error) => {
-      alert(error);
-      console.error(error);
-      handleClose();
-
-    });
-  
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to delete user");
+        }
+        return response.text(); // ใช้ text() แทนเผื่อ response ว่าง
+      })
+      .then((text) => {
+        if (text) {
+          const result = JSON.parse(text);
+          console.log(result);
+        }
+        alert("Delete successful!");
+        getUser();
+        handleClose();
+      })
+      .catch((error) => {
+        alert(error);
+        console.error(error);
+        handleClose();
+      });
   };
 
   useEffect(() => {
@@ -111,6 +112,22 @@ const Users = () => {
 
   const handleUpdate = (idx) => {
     window.location.href = "/update/" + idx;
+  };
+
+  const paginatedItems = items.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
 
   return (
@@ -146,39 +163,66 @@ const Users = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {items?.map((row:any) => (
-                  <TableRow
-                    key={row.username}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell component="th" scope="row">
-                      {row.id}
-                    </TableCell>
-                    <TableCell align="center">
-                      <Box display={"flex"} justifyContent={"center"}>
-                        <Avatar alt={row.username} src={row.image} />
-                      </Box>
-                    </TableCell>
-                    <TableCell align="right">{row.first_name}</TableCell>
-                    <TableCell align="right">{row.last_name}</TableCell>
-                    <TableCell align="right">{row.username}</TableCell>
-                    <TableCell align="right">
-                      <ButtonGroup
-                        variant="outlined"
-                        aria-label="Basic button group"
+                {!isLoading ? (
+                  paginatedItems.length > 0 ? (
+                    paginatedItems?.map((row: any) => (
+                      <TableRow
+                        key={row.username}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
                       >
-                        <Button onClick={() => handleUpdate(row.id)}>
-                          <ModeEditIcon />
-                        </Button>
-                        <Button onClick={() => handleOpen(row.id)}>
-                          <DeleteIcon />
-                        </Button>
-                      </ButtonGroup>
+                        <TableCell component="th" scope="row">
+                          {row.id}
+                        </TableCell>
+                        <TableCell align="center">
+                          <Box display={"flex"} justifyContent={"center"}>
+                            <Avatar alt={row.username} src={row.image} />
+                          </Box>
+                        </TableCell>
+                        <TableCell align="right">{row.first_name}</TableCell>
+                        <TableCell align="right">{row.last_name}</TableCell>
+                        <TableCell align="right">{row.username}</TableCell>
+                        <TableCell align="right">
+                          <ButtonGroup
+                            variant="outlined"
+                            aria-label="Basic button group"
+                          >
+                            <Button onClick={() => handleUpdate(row.id)}>
+                              <ModeEditIcon />
+                            </Button>
+                            <Button onClick={() => handleOpen(row.id)}>
+                              <DeleteIcon />
+                            </Button>
+                          </ButtonGroup>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={6} align="center">
+                        No Data
+                      </TableCell>
+                    </TableRow>
+                  )
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={6} align="center">
+                      <CircularProgress />
                     </TableCell>
                   </TableRow>
-                ))}
+                )}
               </TableBody>
             </Table>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 15]}
+              component="div"
+              count={items.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
           </TableContainer>
 
           <Modal
