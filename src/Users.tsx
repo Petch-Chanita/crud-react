@@ -111,7 +111,7 @@ const Users = () => {
   }, []);
 
   const handleUpdate = (idx) => {
-    window.location.href = "crud-react/update/" + idx;
+    window.location.href = "/update/" + idx;
   };
 
   const paginatedItems = items.slice(
@@ -142,7 +142,7 @@ const Users = () => {
               </Typography>
             </Box>
             <Box>
-              <Link href="crud-react/create">
+              <Link href="/create">
                 <Fab color="primary" aria-label="add">
                   <AddIcon />
                 </Fab>
